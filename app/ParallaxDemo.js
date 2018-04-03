@@ -1,18 +1,13 @@
+
 import React, {Component} from "react";
-import {Animated, Dimensions, Platform, Text, TouchableOpacity, View,AppRegistry} from "react-native";
+import {Animated, Dimensions, Platform, Text, TouchableOpacity, View,View,AppRegistry,ScrollView} from "react-native";
 import {Body, Header, List, ListItem as Item, ScrollableTab, Tab, TabHeading, Tabs, Title} from "native-base";
-import AnimatedLinearGradient, {presetColors} from 'react-native-animated-linear-gradient'
-import HeaderImageScrollView, { TriggeringView } from 'react-native-image-header-scroll-view';
 import LinearGradient from "react-native-linear-gradient";
-
-
-import FirstScreen from './tabs/FirstScreen';
-import ThirdScreen from './tabs/ThirdScreen';
 
 const {width: SCREEN_WIDTH} = Dimensions.get("window");
 const IMAGE_HEIGHT = 250;
 const HEADER_HEIGHT = Platform.OS === "ios" ? 64 : 50;
-const SCROLL_HEIGHT = IMAGE_HEIGHT ;
+const SCROLL_HEIGHT = IMAGE_HEIGHT - HEADER_HEIGHT;
 const THEME_COLOR = "rgba(85,186,255, 1)";
 const FADED_THEME_COLOR = "rgba(85,186,255, 0.8)";
 
@@ -26,21 +21,16 @@ export class ParallaxDemo extends Component {
   });
   tabBg = this.scroll.interpolate({
     inputRange: [0, SCROLL_HEIGHT],
-    outputRange: ["transparent", THEME_COLOR],
+    outputRange: ["white", THEME_COLOR],
     extrapolate: "clamp"
   });
   tabY = this.nScroll.interpolate({
     inputRange: [0, SCROLL_HEIGHT, SCROLL_HEIGHT + 1],
     outputRange: [0, 0, 1]
   });
-
-  tabZ = this.nScroll.interpolate({
-    inputRange: [0, SCROLL_HEIGHT, SCROLL_HEIGHT + 1],
-    outputRange: [0, 0, 1]
-  });
   headerBg = this.scroll.interpolate({
     inputRange: [0, SCROLL_HEIGHT, SCROLL_HEIGHT + 1],
-    outputRange:  [0, 0, 1],
+    outputRange: ["transparent", "transparent", THEME_COLOR],
     extrapolate: "clamp"
   });
   imgScale = this.nScroll.interpolate({
@@ -52,22 +42,13 @@ export class ParallaxDemo extends Component {
     inputRange: [0, SCROLL_HEIGHT],
     outputRange: [1, 0],
   });
-  tabContent = (x, i) =>
-
-  <View style={{height: this.state.height}}>
+  tabContent = (x, i) => <View style={{height: this.state.height}}>
     <List onLayout={({nativeEvent: {layout: {height}}}) => {
       this.heights[i] = height;
       if (this.state.activeTab === i) this.setState({height})
     }}>
-      {new Array(x).fill(null).map((_, i) =>
-
-        <Item key={i}><Text>Item {i}</Text></Item>
-
-
-      )}
-    </List>
-
-    </View>;
+      {new Array(x).fill(null).map((_, i) => <Item key={i}><Text>Item {i}</Text></Item>)}
+    </List></View>;
   heights = [500, 500];
   state = {
     activeTab: 0,
@@ -79,30 +60,20 @@ export class ParallaxDemo extends Component {
     this.nScroll.addListener(Animated.event([{value: this.scroll}], {useNativeDriver: false}));
   }
 
-
-  
-
   render() {
     return (
-      // <HeaderImageScrollView
-      //      headerImage={require('./header_2.jpg')}
-      //    >
-
       <View>
-
-      <Animated.View style={{position: "absolute", width: "100%", backgroundColor: this.headerBg, zIndex: 1}}>
-                <Header style={{backgroundColor: "transparent"}} hasTabs>
-                  <Body>
-                  <Title>
-                    <Animated.Text style={{color: this.textColor, fontWeight: "bold"}}>
-                      Tab Parallax
-                    </Animated.Text>
-                  </Title>
-                  </Body>
-                </Header>
-              </Animated.View>
-
-
+        <Animated.View style={{position: "absolute", width: "100%", backgroundColor: this.headerBg, zIndex: 1}}>
+          <Header style={{backgroundColor: "transparent"}} hasTabs>
+            <Body>
+            <Title>
+              <Animated.Text style={{color: this.textColor, fontWeight: "bold"}}>
+                Tab Parallax
+              </Animated.Text>
+            </Title>
+            </Body>
+          </Header>
+        </Animated.View>
         <Animated.ScrollView
           scrollEventThrottle={5}
           showsVerticalScrollIndicator={false}
@@ -113,15 +84,14 @@ export class ParallaxDemo extends Component {
             backgroundColor: THEME_COLOR
           }}>
             <Animated.Image
-              source={require('./header_2.jpg')}
-              resizeMode="stretch"
-
-              style={{height: IMAGE_HEIGHT, flex: 1,width: "100%", backgroundColor: '#F5FCFF', opacity: this.imgOpacity}}>
-
-
+              source={{uri: "https://upload.wikimedia.org/wikipedia/commons/c/c5/Moraine_Lake_17092005.jpg"}}
+              style={{height: IMAGE_HEIGHT, width: "100%", opacity: this.imgOpacity}}>
+              {/*gradient*/}
+              <LinearGradient
+                colors={["rgba(255,255,255,0.9)", "rgba(255,255,255,0.35)", "rgba(255,255,255,0)"]}
+                locations={[0, 0.25, 1]}
+                style={{position: "absolute", height: "100%", width: "100%"}}/>
             </Animated.Image>
-
-
           </Animated.View>
           <Tabs
             prerenderingSiblingsNumber={3}
@@ -129,7 +99,7 @@ export class ParallaxDemo extends Component {
               this.setState({height: this.heights[i], activeTab: i})
             }}
             renderTabBar={(props) => <Animated.View
-              style={{transform: [{translateY: this.tabY}], zIndex: 1 ,width: "100%", backgroundColor: "white"}}>
+              style={{transform: [{translateY: this.tabY}], zIndex: 1, width: "100%", backgroundColor: "white"}}>
               <ScrollableTab {...props}
                              renderTab={(name, page, active, onPress, onLayout) => (
                                <TouchableOpacity key={page}
@@ -139,7 +109,7 @@ export class ParallaxDemo extends Component {
                                  <Animated.View
                                    style={{
                                      flex: 1,
-                                     height: 500,
+                                     height: 100,
                                      backgroundColor: this.tabBg
                                    }}>
                                    <TabHeading scrollable
@@ -151,7 +121,7 @@ export class ParallaxDemo extends Component {
                                      <Animated.Text style={{
                                        fontWeight: active ? "bold" : "normal",
                                        color: this.textColor,
-                                       fontSize: 20
+                                       fontSize: 14
                                      }}>
                                        {name}
                                      </Animated.Text>
@@ -162,52 +132,18 @@ export class ParallaxDemo extends Component {
                              underlineStyle={{backgroundColor: this.textColor}}/>
             </Animated.View>
             }>
-            <Tab heading="Tab 1" tabStyle>
-
-            <FirstScreen />
-
+            <Tab heading="Tab 1">
+              {this.tabContent(30, 0)}
             </Tab>
             <Tab heading="Tab 2">
-           <ThirdScreen />
-            </Tab>
-
-
-            <Tab heading="Tab 1" >
-
-            <FirstScreen />
-
-            </Tab>
-
-            <Tab heading="Tab 1" >
-
-            <FirstScreen />
-
-            </Tab>
-
-            <Tab heading="Tab 1" >
-
-            <FirstScreen />
-
-            </Tab>
-
-            <Tab heading="Tab 1" >
-
-            <FirstScreen />
-
-            </Tab>
-
-            <Tab heading="Tab 1" >
-
-            <FirstScreen />
-
+              {this.tabContent(15, 1)}
             </Tab>
           </Tabs>
         </Animated.ScrollView>
       </View>
-      // </HeaderImageScrollView>
-
     )
   }
 }
+
 
 AppRegistry.registerComponent('AwesomeProject', () => ParallaxDemo);

@@ -6,8 +6,12 @@ import {
   StyleSheet,
   Text,
   View,
+  ScrollView,
   RefreshControl,
 } from 'react-native';
+
+import MainScreenNavigator from '../tabs/tabContainer'
+
 
 const HEADER_MAX_HEIGHT = 300;
 const HEADER_MIN_HEIGHT = Platform.OS === 'ios' ? 60 : 73;
@@ -27,12 +31,14 @@ export default class Header extends Component {
   }
 
   _renderScrollViewContent() {
-    const data = Array.from({ length: 30 });
+  // <MainScreenNavigator></MainScreenNavigator>
+
+    const data = Array.from({ length: 1 });
     return (
       <View style={styles.scrollViewContent}>
         {data.map((_, i) => (
           <View key={i} style={styles.row}>
-            <Text>{i}</Text>
+           <MainScreenNavigator></MainScreenNavigator>
           </View>
         ))}
       </View>
