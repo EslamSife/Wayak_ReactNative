@@ -5,11 +5,7 @@ import Header from './app/Header';
 const Todo = () => {
 
     return(
-
-
   <Header></Header>
-
-
     );
 }
 
